@@ -1,10 +1,10 @@
 """Загрузка, разбиение и стандартизация данных"""
 
 from dataclasses import dataclass
-from pathlib import Path
 
 import numpy as np
 from sklearn.model_selection import train_test_split
+from ucimlrepo import fetch_ucirepo
 
 
 @dataclass(frozen=True)
@@ -18,19 +18,19 @@ class DatasetSplit:
 
 
 def load_and_prepare(
-    data_path: Path,
     test_size: float = 0.25,
     random_state: int = 42,
 ) -> DatasetSplit:
     """Загружает Raisin и подготавливает данные для эксперимента"""
-    data = np.genfromtxt(data_path, delimiter=",", skip_header=1)
-    if data.shape != (900, 8):
-        raise ValueError("Ожидалась таблица размером 900 на 8")
-    if not np.isfinite(data).all():
-        raise ValueError("Данные содержат пропуски или бесконечные значения")
+    dataset = fetch_ucirepo(id=850)
+    X = dataset.data.features.to_numpy(dtype=np.float64)
+    labels = dataset.data.targets.squeeze().to_numpy(dtype=str)
+    y = (labels == "Kecimen").astype(np.int64)
 
-    X = data[:, :-1]
-    y = data[:, -1].astype(np.int64)
+    if X.shape != (900, 7):
+        raise ValueError("Ожидалась матрица признаков размером 900 на 7")
+    if not np.isfinite(X).all():
+        raise ValueError("Данные содержат пропуски или бесконечные значения")
     if not np.array_equal(np.unique(y), np.array([0, 1])):
         raise ValueError("Целевая переменная должна содержать классы 0 и 1")
 

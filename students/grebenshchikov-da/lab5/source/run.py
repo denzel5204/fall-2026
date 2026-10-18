@@ -27,7 +27,6 @@ plt.switch_backend("Agg")
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_PATH = ROOT / "data" / "raisin.csv"
 IMAGES_DIR = ROOT / "images"
 COLORS = {"newton": "#2F7775", "irls": "#9375A5", "reference": "#169B55"}
 
@@ -127,7 +126,7 @@ def plot_probability_comparison(
 
 def main() -> None:
     """Выполняет полный эксперимент"""
-    split = load_and_prepare(DATA_PATH)
+    split = load_and_prepare()
     X_train = add_intercept(split.X_train)
     X_test = add_intercept(split.X_test)
 
